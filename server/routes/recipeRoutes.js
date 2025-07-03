@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Recipe = require("../models/Recipes");
+const mongoose = require("mongoose");
 
 // Create a new recipe
 router.post("/", async (req, res) => {
@@ -35,6 +36,11 @@ router.get("/category/:category", async (req, res) => {
 
 // Get a single recipe by ID
 router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ error: "Invalid recipe ID" });
+  }
   try {
     const recipe = await Recipe.findById(req.params.id);
     if (!recipe) return res.status(404).json({ error: "Not found" });
